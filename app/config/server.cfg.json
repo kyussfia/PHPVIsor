@@ -1,0 +1,111 @@
+{
+  "noDaemon": true,
+  "umask": "022",
+  "directory": "/tmp/PHPVisor/daemon/",
+  "logFilePath": "/tmp/PHPVisor/log/server.log",
+  "logFileMaxBytes": "50KB",
+  "logMaxNumOfBackups": 3,
+  "logLevel": "Debug",
+  "logChildLogDir": "/tmp/PHPVisor/log/child/",
+  "noCleanUp": false,
+  "servers" : [
+    {
+      "protocol" : "tcp",
+      "host" : "127.0.0.1",
+      "port" : "8080",
+      "canReUseSocketAddress": true,
+      "username": "bÄlä1",
+      "password": 12345
+    },
+    {
+      "protocol": "udp",
+      "host": "127.0.0.1",
+      "port": "8888",
+      "canReUseSocketAddress": false
+    },
+    {
+      "protocol": "unix",
+      "host": "/tmp/PHPVisor/comm.sock",
+      "canReUseSocketAddress": false
+    }
+  ],
+  "processes": [
+    {
+      "command": "/bin/cat Client.php",
+      "autoStart": true,
+      "delay": 2,
+      "autoRestartOn": "expected",
+      "exitCodes": [0],
+      "stopWaitSecs": 10,
+      "customSignal": "QUIT",
+      "termSignal": "TERM",
+      "directory": "/tmp/PHPVisor/",
+      "termWaitSecs": 1,
+      "priority": -5,
+      "groups": [],
+      "name": "Klienskód_print",
+      "pushOutPutToParent": false,
+      "stdErrorFile": null,
+      "stdInFile": null,
+      "stdOutLogFilePath": "AUTO",
+      "stdOutLogMaxBytes": "50KB",
+      "stdOutLogMaxBackups": 2,
+      "logMode": "normal",
+      "logLevel": "Notice"
+    },
+    {
+      "command": "php sleeper.php",
+      "delay": 1,
+      "customSignal": "TERM",
+      "stdOutLogFilePath": "AUTO",
+      "autoStart": true,
+      "pushOutPutToParent": false,
+      "stdErrorFile": "/tmp/PHPVisor/log/child/sleeper.err.log",
+      "logMode": "normal"
+    },
+    {
+      "command": "/bin/cat Client.php",
+      "autoStart": false,
+      "delay": 2,
+      "autoRestartOn": "expected",
+      "exitCodes": [0],
+      "stopWaitSecs": 10,
+      "customSignal": "QUIT",
+      "termSignal": "TERM",
+      "termWaitSecs": 1,
+      "priority": -5,
+      "groups": ["alma"],
+      "name": "Kliensprint2",
+      "pushOutPutToParent": false,
+      "stdErrorFile": null,
+      "stdInFile": null,
+      "stdOutLogFilePath": "AUTO",
+      "stdOutLogMaxBytes": "50KB",
+      "stdOutLogMaxBackups": 2,
+      "logMode": "normal",
+      "logLevel": "debug"
+    },
+    {
+      "command": "/bin/cat sleeper.php",
+      "autoStart": false,
+      "delay": 2,
+      "autoRestartOn": "expected",
+      "exitCodes": [0],
+      "stopWaitSecs": 10,
+      "customSignal": "QUIT",
+      "termSignal": "TERM",
+      "termWaitSecs": 1,
+      "priority": -5,
+      "groups": ["alma"],
+      "name": "sleeperPrint",
+      "pushOutPutToParent": false,
+      "stdErrorFile": null,
+      "stdInFile": null,
+      "stdOutLogFilePath": "AUTO",
+      "stdOutLogMaxBytes": "50KB",
+      "stdOutLogMaxBackups": 2,
+      "logMode": "normal",
+      "logLevel": "debug"
+    }
+  ]
+}
