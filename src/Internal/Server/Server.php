@@ -721,6 +721,5 @@ class Server extends ProcessManager
 
     /**************** End Comm handling *********************************/
 
-    //todo client force disconnect test on daemon : ne szálljon el a démon
     //todo: testing + options testing
 }
