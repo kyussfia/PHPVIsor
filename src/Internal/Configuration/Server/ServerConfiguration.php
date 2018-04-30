@@ -24,11 +24,6 @@ class ServerConfiguration extends AbstractConfiguration
         $this->options->applyOptions();
     }
 
-    public function getUmask()
-    {
-        return $this->options->umask;
-    }
-
     public function getNoCleanup()
     {
         return $this->options->noCleanUp;
@@ -37,6 +32,26 @@ class ServerConfiguration extends AbstractConfiguration
     public function getLogOptions()
     {
         return $this->options->logOptions;
+    }
+
+    public function getNoDaemon()
+    {
+        return $this->options->noDaemon;
+    }
+
+    public function getDirectory()
+    {
+        return $this->options->directory;
+    }
+
+    public function getPidFile()
+    {
+        return $this->options->pidFile;
+    }
+
+    public function getUmask()
+    {
+        return $this->options->umask;
     }
 
     protected function loadFromJson(string $filePath)
@@ -76,8 +91,8 @@ class ServerConfiguration extends AbstractConfiguration
     {
         $configOptions = array(
             'noDaemon',
-            'umask',
             'user',
+            'umask',
             'directory',
             'pidFile',
             'noCleanUp'

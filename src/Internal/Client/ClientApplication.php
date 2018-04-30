@@ -8,6 +8,7 @@
 
 namespace PHPVisor\Internal\Client;
 
+use PHPVisor\Internal\Application;
 use PHPVisor\Internal\Configuration\Client\ClientConfiguration;
 use PHPVisor\Internal\Options\Client\ClientOptions;
 
@@ -100,11 +101,25 @@ class ClientApplication extends Application
                         $result = $this->client->stopProcess($pid);
                         break;
                     }
+                case 'n':
+                case 'stopn':
+                    {
+                        $name = $this->readParamFromInput('Process-name');
+                        $result = $this->client->stopProcessByName($name);
+                        break;
+                    }
                 case 'r':
                 case 'terminate':
                     {
                         $pid = $this->readParamFromInput('pid');
                         $result = $this->client->terminateProcess($pid);
+                        break;
+                    }
+                case 'k':
+                case 'terminaten':
+                    {
+                        $name = $this->readParamFromInput('Process-name');
+                        $result = $this->client->terminateProcessByName($name);
                         break;
                     }
                 case 'a':
@@ -166,7 +181,9 @@ class ClientApplication extends Application
         echo "c - custom - Send the preset customSignal to process  with the given pid\n";
         echo "u - continue - Continue paused (stopped by the system, but not terminated) process with the given pid\n";
         echo "o - stop - Stop process softly (wait for it's end) for the given pid.\n";
+        echo "n - stopn - Stop process softly (wait for it's end) for the given name.\n";
         echo "r - terminate - Stop process hardly (don't wait for it's end) for the given pid.\n";
+        echo "k - terminaten - Stop process hardly (don't wait for it's end) for the given name.\n";
         echo "a - start - Start process by its full(!) name.\n";
         echo "g - startgroup - Start processes by group name, if not all component can run, started ones will be auto-terminated.\n";
         echo "d - stopgroup - Stop processes by group name. (Soft stop)\n";

@@ -150,6 +150,11 @@ class Logger
         $this->enabled = false;
     }
 
+    public function disablePrint()
+    {
+        $this->print = false;
+    }
+
     private function writeLog($entry)
     {
         fwrite($this->handle, $entry);
@@ -168,5 +173,10 @@ class Logger
         }
         rename($this->file, $this->file . ".1");
         $this->handle = fopen($this->file, $this->mode);
+    }
+
+    public function getCurrentHandle()
+    {
+        return $this->handle;
     }
 }

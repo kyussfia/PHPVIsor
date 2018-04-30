@@ -1,7 +1,6 @@
 {
-  "noDaemon": true,
-  "umask": "022",
-  "directory": "/tmp/PHPVisor/daemon/",
+  "noDaemon": false,
+  "pidFile": "/tmp/PHPVisor/daemon/daemon.pid",
   "logFilePath": "/tmp/PHPVisor/log/server.log",
   "logFileMaxBytes": "50KB",
   "logMaxNumOfBackups": 3,
@@ -59,14 +58,14 @@
       "customSignal": "TERM",
       "stdOutLogFilePath": "AUTO",
       "autoStart": true,
-      "pushOutPutToParent": false,
+      "pushOutPutToParent": true,
       "stdErrorFile": "/tmp/PHPVisor/log/child/sleeper.err.log",
       "logMode": "normal"
     },
     {
       "command": "/bin/cat Client.php",
       "autoStart": false,
-      "delay": 2,
+      "delay": 10,
       "autoRestartOn": "expected",
       "exitCodes": [0],
       "stopWaitSecs": 10,

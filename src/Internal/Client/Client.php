@@ -53,9 +53,19 @@ class Client
         return $this->performCommunication("stop", array("pid" => $pid));
     }
 
+    public function stopProcessByName($name)
+    {
+        return $this->performCommunication("stopn", array("name" => $name));
+    }
+
     public function terminateProcess($pid)
     {
         return $this->performCommunication("terminate", array("pid" => $pid));
+    }
+
+    public function terminateProcessByName($name)
+    {
+        return $this->performCommunication("terminaten", array("name" => $name));
     }
 
     public function startProcess($name)

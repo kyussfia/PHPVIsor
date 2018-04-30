@@ -10,4 +10,5 @@ error_reporting(E_ALL);
 for ($i = 0; $i < 50; $i++)
 {
     sleep(1);
+    echo $i . "\t";
 }

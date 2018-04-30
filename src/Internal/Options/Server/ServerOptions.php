@@ -12,17 +12,20 @@ use PHPVisor\Internal\Options\AbstractOptions;
 
 class ServerOptions extends AbstractOptions
 {
+    /**
+     * @var string
+     */
     public $configurationFilePath = __DIR__ . "/../../../../app/config/server.cfg.json";
 
     public $noDaemon = false;
 
     public $user;
 
-    public $umask = 022; //todo deamon
+    public $umask = 0;
 
-    public $directory = "/tmp/PHPVisor/daemon/"; //directory to demonize
+    public $directory = null; //directory to chdir when daemon, default nothing
 
-    public $pidFile; // todo for deamon
+    public $pidFile = "/tmp/PHPVisor/phpvdaemon.pid";
 
     public $noCleanUp = true; // if noCleanUp true we wont clear temp data in folders
 
@@ -55,30 +58,52 @@ class ServerOptions extends AbstractOptions
     {
         $this->setNoDaemon();
         $this->setUser();
-        $this->setUmask();
         $this->setDirectory();
         $this->setPidFile();
         $this->setNoCleanUp();
+        $this->setUmask();
         $this->logOptions->applyParentOptions();
     }
 
+    private function setUmask()
+    {
+        $this->setOptionIfExist('umask', array('m', 'umask'));
+        if (!is_numeric($this->umask))
+        {
+            throw new \InvalidArgumentException("Invalid option at umask. Not a numeric value. (default: 0).");
+        }
+        $this->umask = (int)$this->umask;
+        if (!is_int($this->umask))
+        {
+            throw new \InvalidArgumentException("Invalid option at umask. Mask integer required. (default: 0).");
+        }
+    }
 
     private function setNoCleanUp()
     {
         $this->setBoolOptionIfExist('noCleanUp', 'k', 'nocleanup');
     }
 
-    private function setPidFile() //todo validator? deamon? remove options if not needed
+    private function setPidFile()
     {
         $this->setOptionIfExist('pidFile', array('j', 'pidfile'));
+        $this->dirExistOrCreate(dirname($this->pidFile), "pidFile");
     }
 
     private function setDirectory()
     {
         $this->setOptionIfExist('directory', array('d', 'directory'));
-        if (!is_dir($this->directory) && !mkdir($this->directory, 0777, true))
+        if (null !== $this->directory)
         {
-            throw new \InvalidArgumentException("Can't create/find directory for daemon directory at: " . $this->directory);
+            $this->dirExistOrCreate($this->directory, "daemon directory");
+        }
+    }
+
+    private function dirExistOrCreate(string $path, string $targetName)
+    {
+        if (!is_dir($path) && !mkdir($path, 0777, true))
+        {
+            throw new \InvalidArgumentException("Can't create/find directory for ".$targetName." at: " . $path);
         }
     }
 
@@ -92,20 +117,6 @@ class ServerOptions extends AbstractOptions
         if (!is_string($this->user) && !is_int($this->user))
         {
             throw new \InvalidArgumentException("Invalid option user. Allowed types are integer (uid), username (string). Default current user.");
-        }
-    }
-
-    private function setUmask()
-    {
-        $this->setOptionIfExist('umask', array('m', 'umask'));
-        if (!is_numeric($this->umask))
-        {
-            throw new \InvalidArgumentException("Invalid option at umask. Not a numeric value. (default: 022).");
-        }
-        $this->umask = (int)$this->umask;
-        if (!is_int($this->umask))
-        {
-            throw new \InvalidArgumentException("Invalid option at umask. Mask integer required. (default: 022).");
         }
     }
 
@@ -130,7 +141,7 @@ class ServerOptions extends AbstractOptions
 
     protected static function getShortOptions()
     {
-        return "c:nhvu:m:d:l:y:z:e:j:q:kp";
+        return "c:nhvu:d:m:l:y:z:e:j:q:kp";
     }
 
     protected static function getLongOptions()

@@ -41,8 +41,9 @@ class SocketManager extends \Socket\Raw\Factory
             {
                 throw new \RuntimeException("PHPVisor Server currently supports SOCK_STREAM and SOCK_DGRAM type sockets only.");
             }
+
             $socket->setBlocking(false);
-            $this->logger->debug('Socket on '.$address.' , is set to non-blocking');
+            $this->logger->debug($scheme. ' type socket on '.$address.' , is set to non-blocking');
             $options = $this->parseOptions($socketConfig, $key);
 
             if (isset($options['canReUseSocketAddress']))
@@ -128,7 +129,7 @@ class SocketManager extends \Socket\Raw\Factory
         if ($protocol == 'unix')
         {
             $this->logger->notice('Unix socket file deleted before create it again. Path: '.$host);
-            unlink($host);
+            @unlink($host);
         } else {
             $port = ":".$socketConfig['port'];
         }
@@ -152,7 +153,7 @@ class SocketManager extends \Socket\Raw\Factory
 
     public function checkSockets()
     {
-        $this->logger->debug("Server started to check sockets.");
+        //$this->logger->debug("Server started to check sockets.");
         foreach ($this->sockets as $socketData)
         {
             $socket = $socketData['socket'];

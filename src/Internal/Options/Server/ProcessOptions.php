@@ -27,7 +27,7 @@ class ProcessOptions extends AbstractOptions
     public $envVariables = array(); //process environment variables to pass
     public $wdir; //working directory for process
 
-    public $pushOutPutToParent = false; //if true process stdout will directed to parent
+    public $pushOutPutToParent = false; //if true process stdout will directed to parent This only for development
     public $stdErrorFile = null; //if null the stderr will directed to default log
     public $stdInFile = null; //if null there will be a pipe for process desc. else file path to read from
 
@@ -59,7 +59,7 @@ class ProcessOptions extends AbstractOptions
         $this->setCustomSignal();
         $this->setStopSecs();
         $this->setTermSecs();
-        $this->setStdPushParent();
+        //$this->setStdPushParent();
         $this->setStdErrorFile();
         $this->setStdInFile();
         $this->setPriority();

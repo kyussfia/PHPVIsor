@@ -8,6 +8,7 @@
 
 namespace PHPVisor\Internal\Server;
 
+use PHPVisor\Internal\Application;
 use PHPVisor\Internal\Configuration\Server\ServerConfiguration;
 use PHPVisor\Internal\Options\Server\ServerOptions;
 
@@ -25,12 +26,12 @@ class ServerApplication extends Application
 
     const HELP = "Options:" . PHP_EOL . PHP_EOL .
     " -c/--configuration FILENAME -- configuration file path, run the program with the given configuration file loaded". PHP_EOL .
-    " -n/--nodaemon -- run in the foreground (same as 'nodaemon=true' in config file)" . PHP_EOL . //TODO
+    " -n/--nodaemon -- run in the foreground (same as 'nodaemon=true' in config file)" . PHP_EOL .
     " -h/--help -- print this usage message and exit" . PHP_EOL .
     " -v/--version -- print PHPVisor version number and exit" . PHP_EOL .
     " -u/--user USER -- run PHPVisor as this user (or numeric uid)" . PHP_EOL .
-    " -m/--umask UMASK -- use this umask for daemon subprocess (default is 022)" . PHP_EOL . //todo? doksi
-    " -d/--directory DIRECTORY -- directory to chdir to when daemonized" . PHP_EOL . //todo doksi
+    " -m/--umask UMASK -- use this umask for daemon subprocess (default is 0)" . PHP_EOL .
+    " -d/--directory DIRECTORY -- directory to chdir to when daemonized" . PHP_EOL .
     " -p/--print_log -- everything would write into log, also be printed to screen (only in nodaemon mode)" .PHP_EOL.
     " -l/--logfile FILENAME -- use FILENAME as logfile path" . PHP_EOL .
     " -y/--logfile_max_bytes BYTES -- use BYTES to limit the max size of logfile" . PHP_EOL .
@@ -59,7 +60,7 @@ class ServerApplication extends Application
         }
         elseif ($this->options->needVersion())
         {
-            $versionStr = $this->version->getFromFile(__DIR__ . "/../../.version");
+            $versionStr = $this->version->getFromFile(__DIR__ . "/../../../.version");
             if (null === $versionStr)
             {
                 $versionStr = "UNKNOWN";
@@ -71,6 +72,7 @@ class ServerApplication extends Application
         $this->server = new Server(new ServerConfiguration($this->options));
 
         try{
+            $this->server->init();
             $currentInfo = posix_getpwuid(posix_geteuid());
 
             if ($this->options->user !== $currentInfo['uid']) //We have to change user, because the current and the expected are not equal.
@@ -78,13 +80,13 @@ class ServerApplication extends Application
                 $this->changeUser();
             }
 
-            $this->server->run(); ///TODO maybe demonize here
+            $this->server->run();
         }
         catch (\Exception $e)
         {
             $this->server->logException($e);
             $this->server->logInfo("Server application's running has ended.");
-            throw $e;
+            exit(1);
         }
     }
 

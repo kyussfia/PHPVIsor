@@ -305,7 +305,7 @@ class Socket
         $r = array($this->resource);
         $ret = @socket_select($r, $x, $x, $sec, $usec);
         if ($ret === false) {
-            throw Exception::createFromGlobalSocketOperation('Failed to select socket for reading');
+            throw Exception::createFromGlobalSocketOperation($this->getSockName(). ' Failed to select socket for reading');
         }
         return !!$ret;
     }

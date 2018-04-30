@@ -27,28 +27,131 @@ class Server extends ProcessManager
      */
     private $logger;
 
-    //TODO: Vajon a logprint mit csinál demonizálva lehet a demonize folymat azzal kell kezdödjön hogy log->print = false
+    /**
+     * Pid file handler of the daemon.
+     *
+     * @var resource|null
+     */
+    private $fh;
 
     public function __construct(ServerConfiguration $config)
     {
         $this->config = $config;
         $this->logger = new Logger($this->config->getLogOptions());
         $this->socketManager = new SocketManager($this->logger);
-        if (!$this->config->getNoCleanup()) {
+    }
+
+    public function init()
+    {
+        if (!$this->config->getNoDaemon())
+        {
+            $this->openPid();
+            $this->logger->disablePrint();
+        }
+        if (!$this->config->getNoCleanup())
+        {
             $this->logger->cleanUp();
         }
-        $this->configure($this->config->processes);
         $this->logger->debug("Server application Initialized");
     }
 
+
     public function run()
     {
-        //$this->startUp($this->logger); //öröklődés miatt
+        if (!$this->config->getNoDaemon())
+        {
+            $this->daemonize();
+        }
+        $this->configure($this->config->processes);
+        $this->startUp($this->logger); //have to start this here, this is a workaround, that PHP doesn't have the flag to avoid socket descriptors inharitance to the subprocesses.
         $this->socketManager->buildSockets($this->config->sockets);
         $this->socketManager->openSockets();
-        $this->startUp($this->logger);
+        //$this->startUp($this->logger);
 
         $this->runForever();
+    }
+
+    private function openPid()
+    {
+        $this->fh = fopen($this->config->getPidFile(), 'c+');
+        if (false === $this->fh)
+        {
+            $this->logger->error("Can't create/open specified pidfile for daemon.");
+            throw new \RuntimeException("Can't create/open specified pidfile for daemon.");
+        }
+        if (!flock($this->fh, LOCK_EX | LOCK_NB)) {
+            $this->logger->error("Could not lock the pidfile. This daemon might already running.");
+            throw new \RuntimeException("Could not lock the pidfile. This daemon might already running.");
+        }
+    }
+
+    /**
+     * The logprint option cause the logger tp echoing the log to the output, but we close it here.
+     *  Solution is, when the child spawned, set print to false, no matter what.
+     */
+    private function daemonize()
+    {
+        //Forking
+        $this->logger->debug("Start to make PHPVisor daemon.");
+        $pid = pcntl_fork();
+        if ($pid == -1) {
+            $this->logger->error("Can't fork server into a daemon.");
+            throw new \RuntimeException("Can't fork PHPVisor, pcntl_fork failed!");
+        } else if ($pid) {
+            //$pid //parent id
+            $this->logger->notice("PHPVisor forked, exiting parent.");
+            exit(0);
+        } else {
+            $this->logger->notice("Daemonizing PHPVisor - Server process.");
+        }
+
+        if (posix_setsid() === -1) {
+            $this->logger->error("Can't make session leader the daemon process.");
+            throw new \RuntimeException("Can't make session leader the daemon process.");
+        }
+        else {
+            $this->logger->notice("Child process detached from terminal.");
+        }
+
+        if ($this->config->getDirectory())
+        {
+            $result = chdir($this->config->getDirectory());
+            if ($result)
+            {
+                $this->logger->notice("Directory changed (chdir) to: " . $this->config->getDirectory());
+            }
+            else {
+                $this->logger->error("Can't change directory (chdir) to: " . $this->config->getDirectory());
+            }
+        }
+
+        fseek($this->fh, 0);
+        ftruncate($this->fh, 0);
+        fwrite($this->fh, getmypid());
+        fflush($this->fh);
+        $this->logger->notice("Pidfile for daemon process, wrote.");
+
+        fclose(STDIN);
+        fclose(STDOUT);
+        fclose(STDERR);
+        //redirect fd's if wanna use it
+        $stdIn = fopen('/dev/null', 'r');
+        $stdOut = fopen('/dev/null', 'w');
+        $stdErr = fopen('/dev/null', 'w');
+
+        $this->logger->notice("File descriptors resettled.");
+        $this->useUmask();
+        //if want to implement any signal forwarding, below this we can do this
+    }
+
+    private function useUmask()
+    {
+        $res = umask($this->config->getUmask());
+        if ($res == $this->config->getUmask()) {
+            $this->logger->notice($res . " umask used.");
+        } else {
+            $this->logger->warning("Cannot use mask: " . $this->config->getUmask());
+        }
     }
 
     private function runForever()
@@ -63,19 +166,19 @@ class Server extends ProcessManager
 
     protected function checkProcesses()
     {
-        sleep(1);
-        $this->logger->debug("#" . getmypid() . " Parent started to check started processes.");
+        //sleep(1);
+        //$this->logger->debug("#" . getmypid() . " Parent started to check started processes.");
         foreach ($this->runningPool as $process) {
 
             $isRun = $process->isRunning();
             if ($isRun && !$process->isStopped()) {
-                $this->logger->debug("#" . $process->getPid() . " - " . $process->getName() . " is still running.");
+                //$this->logger->debug("#" . $process->getPid() . " - " . $process->getName() . " is still running.");
             } elseif ($process->isStopped()) {
                 $this->logger->warning("#" . $process->getPid() . " - " . $process->getName() . " is stopped by a signal. Signals got: " . implode(', ', $process->getSignals()));
             } elseif ($process->isTerminated()) {
                 $this->logger->warning("#" . $process->getPid() . " - " . $process->getName() . " is terminated by a signal. Signals got: " . implode(', ', $process->getSignals()));
             } elseif ($process->isNormalExit()) {
-                $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is normally exited, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status.");
+                $this->logger->debug("#" . $process->getPid() . " - " . $process->getName() . " is normally exited, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status.");
             } else {
                 $this->logger->error("#" . $process->getPid() . " - " . $process->getName() . " is abnormally exited in unhandled way, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status. " . (count($process->getSignals()) > 0 ? "Signals: " . implode(", ", $process->getSignals()) : ""));
             }
@@ -94,16 +197,6 @@ class Server extends ProcessManager
                     }
                 }
             }
-        }
-    }
-
-    private function useUmask() //TODO to demon
-    {
-        $res = umask($this->config->getUmask());
-        if ($res == $this->config->getUmask()) {
-            $this->logger->notice($res . " umask used.");
-        } else {
-            $this->logger->warning("Cannot use mask: " . $this->config->getUmask());
         }
     }
 
@@ -252,7 +345,8 @@ class Server extends ProcessManager
         $total = count($processes);
         if (!$error)
         {
-            $msg = "Processes of ".$group." started. (total:".$total.", already running: ".$total - $count.", started now: ".$count.")";
+            $msg = "Processes of ".$group." started by user. (total:".($total).", already running: ".($total - $count).", started now: ".$count.")";
+            $this->logger->debug($msg);
             return array("msg" => $msg);
         }
         else {
@@ -282,8 +376,8 @@ class Server extends ProcessManager
             }
         }
         $total = count($processes);
-        $this->logger->notice("Processes of the group ".$group." are stopped by user. (total:".$total.", already stopped: ".$total - $count.", stopped now: ".$count.")");
-        return array("msg" => "Processes of the group ".$group." are stopped by user. (total:".$total.", already stopped: ".$total - $count.", stopped now: ".$count.")");
+        $this->logger->notice("Processes of the group ".$group." are stopped by user. (total:".$total.", already stopped: ".($total - $count).", stopped now: ".$count.")");
+        return array("msg" => "Processes of the group ".$group." are stopped by user. (total:".$total.", already stopped: ".($total - $count).", stopped now: ".$count.")");
     }
 
     private function stopProcessByPid(array $params)
@@ -299,8 +393,25 @@ class Server extends ProcessManager
             return array("error" => "Only running processes can be stopped. ".$pid." is not running.");
         }
         $this->stopProcess($process, $this->logger);
-        $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is stopped.");
-        return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is stopped.");
+        $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is stopped by user.");
+        return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is stopped by user.");
+    }
+
+    private function stopProcessByName(array $params)
+    {
+        $name = $this->validateProcessName($params);
+        if (!is_array($name))
+        {
+            $process = $this->getProcessByName($name);
+            if ($process->getRunning())
+            {
+                $this->stopProcess($process, $this->logger);
+                $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is stopped by user.");
+                return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is stopped by user.");
+            }
+            return array("msg" => $process->getName() . " is not running.");
+        }
+        return $name;
     }
 
     private function terminateProcessesByGroupName(array $params)
@@ -321,8 +432,8 @@ class Server extends ProcessManager
             }
         }
         $total = count($processes);
-        $this->logger->notice("Processes of the group ".$group." are terminated by user. (total:".$total.", already terminated: ".$total - $count.", terminated now: ".$count.")");
-        return array("msg" => "Processes of the group ".$group." are terminated by user. (total:".$total.", already terminated: ".$total - $count.", terminated now: ".$count.")");
+        $this->logger->notice("Processes of the group ".$group." are terminated by user. (total:".$total.", already terminated: ".($total - $count).", terminated now: ".$count.")");
+        return array("msg" => "Processes of the group ".$group." are terminated by user. (total:".$total.", already terminated: ".($total - $count).", terminated now: ".$count.")");
     }
 
     private function terminateProcessByPid(array $params)
@@ -338,8 +449,25 @@ class Server extends ProcessManager
             return array("error" => "Only running processes can be terminated. ".$pid." is not running.");
         }
         $this->terminateProcess($process, $this->logger);
-        $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is terminated.");
-        return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is terminated.");
+        $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is terminated by user.");
+        return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is terminated by user.");
+    }
+
+    private function terminateProcessByName(array $params)
+    {
+        $name = $this->validateProcessName($params);
+        if (!is_array($name))
+        {
+            $process = $this->getProcessByName($name);
+            if ($process->getRunning())
+            {
+                $this->terminateProcess($process, $this->logger);
+                $this->logger->notice("#" . $process->getPid() . " - " . $process->getName() . " is terminated by user.");
+                return array("msg" => "#" . $process->getPid() . " - " . $process->getName() . " is terminated by user.");
+            }
+            return array("msg" => $process->getName() . " is not running.");
+        }
+        return $name;
     }
 
     private function validatePidParam($params)
@@ -448,6 +576,7 @@ class Server extends ProcessManager
 
         $missingParamResponse = array("error" => "Missing parameter(s) for action: ".$data['action']);
 
+        $this->logger->debug("Resolve action: " . $data['action']);
         switch ($data['action']) {
             case 'test':
                 return array();
@@ -472,12 +601,24 @@ class Server extends ProcessManager
                     return $missingParamResponse;
                 }
                 return $this->stopProcessByPid($data['params']);
+            case 'stopn':
+                if (!isset($data['params']) || !is_array($data['params']))
+                {
+                    return $missingParamResponse;
+                }
+                return $this->stopProcessByName($data['params']);
             case 'terminate':
                 if (!isset($data['params']) || !is_array($data['params']))
                 {
                     return $missingParamResponse;
                 }
                 return $this->terminateProcessByPid($data['params']);
+            case 'terminaten':
+                if (!isset($data['params']) || !is_array($data['params']))
+                {
+                    return $missingParamResponse;
+                }
+                return $this->terminateProcessByName($data['params']);
             case 'start':
                 if (!isset($data['params']) || !is_array($data['params']))
                 {
@@ -569,6 +710,6 @@ class Server extends ProcessManager
 
     /**************** End Comm handling *********************************/
 
-    //todo: deamonize (umask, pidfile, directory)
+    //todo more client
     //todo: testing + options testing
 }

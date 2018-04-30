@@ -6,7 +6,7 @@
  * Created at: 2018.04.23. 16:09
  */
 
-namespace PHPVisor\Internal\Server;
+namespace PHPVisor\Internal;
 
 use PHPVisor\Internal\Options\AbstractOptions;
 
