@@ -156,31 +156,41 @@ class Server extends ProcessManager
 
     private function runForever()
     {
+        $first = true;
         while (1) {
             if ($socket = $this->socketManager->checkSockets()) {
                 $this->acceptSocket($socket);
             }
-            $this->checkProcesses();
+            $this->checkProcesses($first);
+            $first = false;
         }
     }
 
-    protected function checkProcesses()
+    protected function checkProcesses(bool $first = false)
     {
-        //sleep(1);
-        //$this->logger->debug("#" . getmypid() . " Parent started to check started processes.");
         foreach ($this->runningPool as $process) {
-
+            $oldStatus = $first ? null : $process->getStatus();
             $isRun = $process->isRunning();
+            $newStatus = $process->getStatus();
             if ($isRun && !$process->isStopped()) {
-                //$this->logger->debug("#" . $process->getPid() . " - " . $process->getName() . " is still running.");
+                $log = "#" . $process->getPid() . " - " . $process->getName() . " is still running.";
+                $level = "notice";
             } elseif ($process->isStopped()) {
-                $this->logger->warning("#" . $process->getPid() . " - " . $process->getName() . " is stopped by a signal. Signals got: " . implode(', ', $process->getSignals()));
+                $log = "#" . $process->getPid() . " - " . $process->getName() . " is stopped by a signal. Signals got: " . implode(', ', $process->getSignals());
+                $level = "warning";
             } elseif ($process->isTerminated()) {
-                $this->logger->warning("#" . $process->getPid() . " - " . $process->getName() . " is terminated by a signal. Signals got: " . implode(', ', $process->getSignals()));
+                $log = "#" . $process->getPid() . " - " . $process->getName() . " is terminated by a signal. Signals got: " . implode(', ', $process->getSignals());
+                $level = "warning";
             } elseif ($process->isNormalExit()) {
-                $this->logger->debug("#" . $process->getPid() . " - " . $process->getName() . " is normally exited, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status.");
+                $log = "#" . $process->getPid() . " - " . $process->getName() . " is normally exited, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status.";
+                $level = "notice";
             } else {
-                $this->logger->error("#" . $process->getPid() . " - " . $process->getName() . " is abnormally exited in unhandled way, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status. " . (count($process->getSignals()) > 0 ? "Signals: " . implode(", ", $process->getSignals()) : ""));
+                $log = "#" . $process->getPid() . " - " . $process->getName() . " is abnormally exited in unhandled way, with code: " . $process->getErrorCode() . " and " . $process->getErrorMsg() . " status. " . (count($process->getSignals()) > 0 ? "Signals: " . implode(", ", $process->getSignals()) : "");
+                $level = "error";
+            }
+            if ($oldStatus != $newStatus)
+            {
+                $this->logger->$level($log);
             }
 
             if (!$isRun)
@@ -559,7 +569,7 @@ class Server extends ProcessManager
         $msg = $this->packData($response);
         $conn->send($msg, MSG_EOF);
         $this->logger->debug("Sent data to " . $conn->getPeerName(). " is: ".$msg);
-        $this->logger->notice("Close connection of " . $conn->getPeerName());
+        $this->logger->notice("Close connection.");
         $conn->close();
     }
 
@@ -710,6 +720,5 @@ class Server extends ProcessManager
 
     /**************** End Comm handling *********************************/
 
-    //todo more client
     //todo: testing + options testing
 }

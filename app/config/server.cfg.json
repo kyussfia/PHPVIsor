@@ -4,7 +4,7 @@
   "logFilePath": "/tmp/PHPVisor/log/server.log",
   "logFileMaxBytes": "50KB",
   "logMaxNumOfBackups": 3,
-  "logLevel": "Debug",
+  "logLevel": "debug",
   "logChildLogDir": "/tmp/PHPVisor/log/child/",
   "noCleanUp": false,
   "servers" : [

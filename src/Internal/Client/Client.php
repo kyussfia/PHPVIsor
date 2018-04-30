@@ -132,15 +132,28 @@ class Client
         {
             echo '.';
         }
-        echo PHP_EOL;
 
         $response = null;
 
+        echo PHP_EOL."Start read data";
+
+        while (0 !== @socket_recv($this->connected->getResource(), $buffer, 1024, MSG_DONTWAIT))
+        {
+            if (NULL === $buffer)
+            {
+                break;
+            }
+            $response .= $buffer;
+            echo '.';
+        }
+
+        /* //Can't use the clue's lib's function for this, have to use php api recv.
         while (NULL !== ($read = $this->connected->recv(1024, MSG_WAITALL))) //MSG_WAITALL | MSG_DONTWAIT
         {
             $response .= $read;
-        }
+        }*/
 
+        echo PHP_EOL;
         return $this->unpackData($response);
     }
 

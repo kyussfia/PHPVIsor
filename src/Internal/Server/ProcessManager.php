@@ -41,7 +41,7 @@ class ProcessManager
 
     private function logStartProcess(Process $process, Logger $logger)
     {
-        if (!$process->isRunning())
+        if (!$process->getRunning())
         {
             $process->start();
             if ($process->isStarted())
