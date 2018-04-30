@@ -568,7 +568,8 @@ class Server extends ProcessManager
         $response = $this->createResponse($data, $socketData, $conn->getPeerName());
         $msg = $this->packData($response);
         $conn->send($msg, MSG_EOF);
-        $this->logger->debug("Sent data to " . $conn->getPeerName(). " is: ".$msg);
+        $log = "Sent data is: ".$msg;
+        $this->logger->debug($log);
         $this->logger->notice("Close connection.");
         $conn->close();
     }
@@ -720,5 +721,6 @@ class Server extends ProcessManager
 
     /**************** End Comm handling *********************************/
 
+    //todo client force disconnect test on daemon : ne szálljon el a démon
     //todo: testing + options testing
 }
