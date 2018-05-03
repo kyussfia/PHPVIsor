@@ -138,27 +138,27 @@ class ProcessOptions extends AbstractOptions
     private function setDelay()
     {
         $this->setOptionIfExist('delay', 'delay');
-        if (!is_int($this->delay))
+        if (!is_int($this->delay) || $this->delay < 0)
         {
-            throw new \InvalidArgumentException("Invalid option at delay. Allowed type integer (default: 2).");
+            throw new \InvalidArgumentException("Invalid option at delay. Allowed type positive integer (default: 2).");
         }
     }
 
     private function setStopSecs()
     {
         $this->setOptionIfExist('stopWaitSecs', 'stopWaitSecs');
-        if (!is_int($this->stopWaitSecs))
+        if (!is_int($this->stopWaitSecs) || $this->stopWaitSecs < 0)
         {
-            throw new \InvalidArgumentException("Invalid option at stopWaitSecs. Allowed type integer (default: 5).");
+            throw new \InvalidArgumentException("Invalid option at stopWaitSecs. Allowed type positive integer (default: 5).");
         }
     }
 
     private function setTermSecs()
     {
         $this->setOptionIfExist('termWaitSecs', 'termWaitSecs');
-        if (!is_int($this->termWaitSecs))
+        if (!is_int($this->termWaitSecs) || $this->termWaitSecs < 0)
         {
-            throw new \InvalidArgumentException("Invalid option at termWaitSecs. Allowed type integer (default: 1).");
+            throw new \InvalidArgumentException("Invalid option at termWaitSecs. Allowed type positive integer (default: 1).");
         }
     }
 

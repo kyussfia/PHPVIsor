@@ -166,7 +166,7 @@ class Logger
         if (file_exists($this->file . "." . $this->numOfBackups)) {
             unlink($this->file . "." . $this->numOfBackups);
         }
-        for ($i = $this->numOfBackups - 1; $i > 0; $i--) {
+        for ($i = $this->numOfBackups; $i > 0; $i--) {
             if (file_exists($this->file . "." . $i)) {
                 rename($this->file . "." . $i, $this->file . "." . ($i + 1));
             }

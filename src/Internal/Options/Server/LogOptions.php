@@ -110,9 +110,9 @@ class LogOptions extends AbstractOptions
     private function setLogMaxNumOfBackups(array $options)
     {
         $this->setOptionIfExist('logMaxNumOfBackups', $options);
-        if ($this->logMaxNumOfBackups && !is_numeric($this->logMaxNumOfBackups))
+        if ($this->logMaxNumOfBackups && !is_numeric($this->logMaxNumOfBackups) || $this->logMaxNumOfBackups < 0)
         {
-            throw new \InvalidArgumentException("Invalid number on logMaxNumOfBackups (0: no file backup if file size hit the limit): " . $this->logMaxNumOfBackups);
+            throw new \InvalidArgumentException("Invalid non negative number on logMaxNumOfBackups (0: no file backup if file size hit the limit): " . $this->logMaxNumOfBackups);
         }
     }
 
