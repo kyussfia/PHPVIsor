@@ -21,8 +21,6 @@ class ClientApplication extends Application
         " -l/--url -- server uri, the client will connect for" . PHP_EOL .
         " -u/--user USER -- PHPVisor Client username for authentication when connect to server" . PHP_EOL .
         " -p/--pwd -- PHPVisor Client password for authentication when connect to server" . PHP_EOL .
-        " -t/--prompt NAME -- The client prompt string, (default: PHPVisorClient)" . PHP_EOL.
-        " -i/--history_file FILENAME -- Use this history file for readline, if available" . PHP_EOL.
         " -h/--help -- Print this help message and exit." . PHP_EOL
     ;
 
@@ -158,7 +156,7 @@ class ClientApplication extends Application
             }
             if (!$skipServe)
             {
-                if ($result)
+                if ($result && isset($result['success']))
                 {
                     $this->serveResponse($result);
                     echo PHP_EOL;

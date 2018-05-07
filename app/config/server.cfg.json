@@ -43,7 +43,6 @@
       "priority": -5,
       "groups": [],
       "name": "Klienskód_print",
-      "pushOutPutToParent": false,
       "stdErrorFile": null,
       "stdInFile": null,
       "stdOutLogFilePath": "AUTO",

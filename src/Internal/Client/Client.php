@@ -128,33 +128,38 @@ class Client
 
     private function response()
     {
-        while (!$this->connected->selectRead(0.1))
+        /*while (!$this->connected->selectRead(0.1)) //with this solution we can wait forever if server exited.
         {
-            echo '.';
-        }
+            echo '...';
+        }*/
 
         $response = null;
 
-        echo PHP_EOL."Start read data";
-
-        while (0 !== @socket_recv($this->connected->getResource(), $buffer, 1024, MSG_DONTWAIT))
+        if ($this->connected->selectRead(60))
         {
-            if (NULL === $buffer)
+            echo PHP_EOL."Start read data";
+
+            while (0 !== @socket_recv($this->connected->getResource(), $buffer, 1024, MSG_DONTWAIT))
             {
-                break;
+                if (NULL === $buffer)
+                {
+                    break;
+                }
+                $response .= $buffer;
+                echo '.';
             }
-            $response .= $buffer;
-            echo '.';
+
+            /* //Can't use the clue's lib's function for this, have to use php api recv.
+            while (NULL !== ($read = $this->connected->recv(1024, MSG_WAITALL))) //MSG_WAITALL | MSG_DONTWAIT
+            {
+                $response .= $read;
+            }*/
+
+            echo PHP_EOL;
+            $response = $this->unpackData($response);
         }
 
-        /* //Can't use the clue's lib's function for this, have to use php api recv.
-        while (NULL !== ($read = $this->connected->recv(1024, MSG_WAITALL))) //MSG_WAITALL | MSG_DONTWAIT
-        {
-            $response .= $read;
-        }*/
-
-        echo PHP_EOL;
-        return $this->unpackData($response);
+        return $response;
     }
 
     public function close()
