@@ -12,8 +12,14 @@ use Socket\Raw\Socket;
 
 class SocketManager extends \Socket\Raw\Factory
 {
+    /**
+     * @var array
+     */
     public $sockets = array();
 
+    /**
+     * @var Logger
+     */
     private $logger;
 
     public function __construct(Logger $logger)
@@ -79,6 +85,10 @@ class SocketManager extends \Socket\Raw\Factory
             {
                 throw new \InvalidArgumentException("Invalid value at username (".($key + 1).". socket config). Cannot be empty.");
             }
+            if (null !== $socketConfig['username'] && strlen($socketConfig['username']) > 20)
+            {
+                throw new \InvalidArgumentException("Invalid value at username (".($key + 1).". socket config). Username length can't be greater than 20.");
+            }
             $options['username'] = $socketConfig['username'];
         }
 
@@ -88,6 +98,10 @@ class SocketManager extends \Socket\Raw\Factory
             if (null !== $socketConfig['password'] && empty($socketConfig['password']))
             {
                 throw new \InvalidArgumentException("Invalid value at password (".($key + 1).". socket config). Cannot be empty.");
+            }
+            if (null !== $socketConfig['password'] && stream_is_local($socketConfig['password']) > 20)
+            {
+                throw new \InvalidArgumentException("Invalid value at password (".($key + 1).". socket config). Password length can't be greater than 20.");
             }
             $options['password'] = $socketConfig['password'];
         }

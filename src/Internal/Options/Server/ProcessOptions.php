@@ -123,6 +123,13 @@ class ProcessOptions extends AbstractOptions
         {
             throw new \InvalidArgumentException("Invalid option at groups. Allowed type array (default: [\"myGroup\"]).");
         }
+        foreach ($this->groups as $group)
+        {
+            if (strlen($group) > 15)
+            {
+                throw new \InvalidArgumentException("The length of given groupname: ".$group." must be less than or equal to 15.");
+            }
+        }
     }
 
     private function setPriority()
@@ -175,7 +182,11 @@ class ProcessOptions extends AbstractOptions
         $this->setOptionIfExist('name', 'name');
         if (!$this->name)
         {
-            $this->name = "Process for " . $this->command;
+            $this->name = "Proc_" . $this->command;
+        }
+        if (strlen($this->name) > 15)
+        {
+            throw new \InvalidArgumentException("The length of given name: ".$this->name." must be less than or equal to 15.");
         }
     }
 

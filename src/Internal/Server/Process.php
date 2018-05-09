@@ -59,22 +59,49 @@ class Process
      */
     protected $errorMsg = null;
 
+    /**
+     * @var array
+     */
     protected $status;
 
+    /**
+     * @var bool
+     */
     protected $stoppedBySys = false;
 
+    /**
+     * @var bool
+     */
     protected $stoppedByUser = false;
 
+    /**
+     * @var null|integer
+     */
     protected $lastStart = null;
 
+    /**
+     * @var null|integer
+     */
     protected $lastStop = null;
 
+    /**
+     * @var int
+     */
     protected $rounds = 0;
 
+    /**
+     * @var int
+     */
     protected $lastRunningResult = 0;
 
+    /**
+     * @var null|resource
+     */
     protected $resource = null;
 
+    /**
+     * @var null|array
+     */
     protected $pipes = null;
 
     /**
@@ -94,7 +121,6 @@ class Process
     private function initDefaults()
     {
         $this->pid = 0;
-        $this->gid = 0;
         $this->errorCode = null;
         $this->errorMsg = null;
         $this->started = false;
@@ -117,7 +143,17 @@ class Process
             $desc[1] = array("pipe", "w");
         }
         //stderr
-        $desc[2] = null !== $this->options->stdErrorFile ? array("file", $this->options->stdErrorFile, 'a') : array("file", $this->options->logOptions->logFilePath, "a");
+        if (null !== $this->options->stdErrorFile)
+        {
+            $desc[2] = array("file", $this->options->stdErrorFile, 'a');
+        }
+        elseif (null !== $this->options->logOptions->logFilePath)
+        {
+            $desc[2] = array("file", $this->options->logOptions->logFilePath, "a");
+        }
+        else {
+            $desc[2] = array("pipe", "w");
+        }
         return $desc;
     }
 
@@ -128,7 +164,6 @@ class Process
         $this->lastStart = microtime();
         sleep($this->options->delay);
         $src = proc_open(escapeshellcmd($this->options->command), $this->getDescriptors(), $pipes, $this->options->wdir, $this->options->envVariables);
-
         if (false !== $src)
         {
             $this->resource = $src;
@@ -158,6 +193,7 @@ class Process
             $this->setPriority();
         }
         else {
+            $this->closePipes();
             $this->lastStop = microtime();
             $this->started = false;
             $this->logger->error("#".$this->getPid()." - ".$this->getName()." start failed");
@@ -437,16 +473,26 @@ class Process
         return null;
     }
 
-    public function shutdown($direct = false, $force = false)
+    private function closePipes()
     {
-        $str = $force ? "Terminate" : "Shut down";
-        $this->logger->debug($str." #".$this->getPid()." - ".$this->getName().".");
         fclose($this->pipes[0]); //close process in
         if (!$this->options->pushOutPutToParent)
         {
             $this->logger->notice(stream_get_contents($this->pipes[1]), true);
             fclose($this->pipes[1]); //close process out
         }
+        if (null === $this->options->stdErrorFile && null === $this->options->logOptions->logFilePath)//its a pipe
+        {
+            $this->logger->error(stream_get_contents($this->pipes[2]), true);
+            fclose($this->pipes[2]);
+        }
+    }
+
+    public function shutdown($direct = false, $force = false)
+    {
+        $str = $force ? "Terminate" : "Shut down";
+        $this->logger->debug($str." #".$this->getPid()." - ".$this->getName().".");
+        $this->closePipes();
         $this->lastStop = microtime();
         if ($force)
         {

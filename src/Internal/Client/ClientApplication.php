@@ -14,6 +14,9 @@ use PHPVisor\Internal\Options\Client\ClientOptions;
 
 class ClientApplication extends Application
 {
+    /**
+     * @var Client
+     */
     private $client;
 
     const HELP = "Options:" . PHP_EOL . PHP_EOL .
@@ -102,7 +105,7 @@ class ClientApplication extends Application
                 case 'n':
                 case 'stopn':
                     {
-                        $name = $this->readParamFromInput('Process-name');
+                        $name = $this->readParamFromInput('Process-name', 15);
                         $result = $this->client->stopProcessByName($name);
                         break;
                     }
@@ -116,35 +119,35 @@ class ClientApplication extends Application
                 case 'k':
                 case 'terminaten':
                     {
-                        $name = $this->readParamFromInput('Process-name');
+                        $name = $this->readParamFromInput('Process-name', 15);
                         $result = $this->client->terminateProcessByName($name);
                         break;
                     }
                 case 'a':
                 case 'start':
                     {
-                        $name = $this->readParamFromInput('Process-name');
+                        $name = $this->readParamFromInput('Process-name', 15);
                         $result = $this->client->startProcess($name);
                         break;
                     }
                 case 'g':
                 case 'startgroup':
                     {
-                        $name = $this->readParamFromInput('Group-name');
+                        $name = $this->readParamFromInput('Group-name', 15);
                         $result = $this->client->startGroup($name);
                         break;
                     }
                 case 'd':
                 case 'stopgroup':
                     {
-                        $name = $this->readParamFromInput('Group-name');
+                        $name = $this->readParamFromInput('Group-name', 15);
                         $result = $this->client->stopGroup($name);
                         break;
                     }
                 case 'e':
                 case 'terminategroup':
                     {
-                        $name = $this->readParamFromInput('Group-name');
+                        $name = $this->readParamFromInput('Group-name', 15);
                         $result = $this->client->terminateGroup($name);
                         break;
                     }
@@ -190,7 +193,7 @@ class ClientApplication extends Application
         echo "************* Enter command to perform **************\n";
     }
 
-    private function readParamFromInput(string $targetParamName)
+    private function readParamFromInput(string $targetParamName, int $charLimit = -1)
     {
         $choice = null;
         $valid = false;
@@ -200,7 +203,11 @@ class ClientApplication extends Application
             $choice = trim(fgets(STDIN));
             $valid = !empty($choice);
 
-            if (!$valid)
+            if (-1 !== $charLimit && strlen($choice) > $charLimit)
+            {
+                echo "\e[1;33mWarning\e[0m: Please enter a valid, value's max length is ".$charLimit.".".PHP_EOL;
+                $valid = false;
+            } elseif (!$valid)
             {
                 echo "\e[1;33mWarning\e[0m: Please enter a valid, nonempty value.".PHP_EOL;
             }

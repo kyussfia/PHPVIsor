@@ -1,0 +1,28 @@
+{
+  "processes": [
+    {
+      "command": "/bin/cat Client.php",
+      "autoStart": true,
+      "delay": 2,
+      "autoRestartOn": "expected",
+      "exitCodes": [0],
+      "stopWaitSecs": 10,
+      "customSignal": "QUIT",
+      "termSignal": "TERM",
+      "directory": "/tmp/PHPVisor/",
+      "termWaitSecs": 1,
+      "priority": -5,
+      "groups": [],
+      "name": "Klienskód_p",
+      "stdErrorFile": null,
+      "stdInFile": null,
+      "stdOutLogFilePath": "AUTO",
+      "stdOutLogMaxBytes": "50KB",
+      "stdOutLogMaxBackups": 2,
+      "logMode": "normal",
+      "logLevel": "Notice"
+    }
+  ],
+  "servers": [
+  ]
+}

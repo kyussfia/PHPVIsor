@@ -57,11 +57,19 @@ class ClientOptions extends AbstractOptions
     private function setUsername()
     {
         $this->setOptionIfExist('username', array('u', 'user'));
+        if (strlen($this->username) > 20)
+        {
+            throw new \InvalidArgumentException("The length of given username: ".$this->username." must be less than or equal to 20.");
+        }
     }
 
     private function setPwd()
     {
         $this->setOptionIfExist('password', array('p', 'pwd'));
+        if (strlen($this->username) > 20)
+        {
+            throw new \InvalidArgumentException("The length of given password: ".$this->password." must be less than or equal to 20.");
+        }
     }
 
     protected static function getStartupOptions()

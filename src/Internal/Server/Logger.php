@@ -12,26 +12,59 @@ use PHPVisor\Internal\Options\Server\LogOptions;
 
 class Logger
 {
+    /**
+     * @var string
+     */
     private $dateFormat = "Y-m-d H:i:s";
 
+    /**
+     * @var mixed
+     */
     private $logLevel;
 
+    /**
+     * @var int
+     */
     private $maxLogFileSize;
 
+    /**
+     * @var bool|resource
+     */
     private $handle;
 
+    /**
+     * @var string
+     */
     private $file;
 
+    /**
+     * @var int
+     */
     private $numOfBackups;
 
+    /**
+     * @var string
+     */
     private $childDir;
 
+    /**
+     * @var string
+     */
     private $mode = "ab";
 
+    /**
+     * @var bool
+     */
     private $enabled = true;
 
+    /**
+     * @var bool
+     */
     private $print;
 
+    /**
+     * @var int
+     */
     private $logMode;
 
     const DEBUG = 1;

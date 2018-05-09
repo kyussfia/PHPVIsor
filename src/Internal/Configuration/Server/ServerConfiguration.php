@@ -13,8 +13,14 @@ use PHPVisor\Internal\Options\Server\ServerOptions;
 
 class ServerConfiguration extends AbstractConfiguration
 {
+    /**
+     * @var array
+     */
     public $sockets = array();
 
+    /**
+     * @var array
+     */
     public $processes = array();
 
     public function __construct(ServerOptions $options)

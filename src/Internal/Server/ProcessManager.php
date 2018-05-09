@@ -12,8 +12,14 @@ use PHPVisor\Internal\Options\Server\ProcessOptions;
 
 class ProcessManager
 {
+    /**
+     * @var array
+     */
     protected $pool = array();
 
+    /**
+     * @var array
+     */
     protected $runningPool = array();
 
     protected function addProcess(Process $process)

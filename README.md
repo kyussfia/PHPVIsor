@@ -5,6 +5,11 @@ PHPVisor : Process managment system in client-server architect for unix sytems
 PHPVisor is about the main idea of SuperVisor (http://supervisord.org/), but implemented in PHP, and serve a  bit less functionality than the SuperVisor.
 If you want to know more about SuperVisor, check it's github: https://github.com/Supervisor/supervisor
 
+# Documentation
+The long described documentation of the programs, in Hungarian language can be found in the [doc](doc) folder.
+The documentation is created as a final exam at ELTE in 2018.
+
+
 # External Code
 I used for my project, a light-weight sockat library, written in PHP.
 This a minimal lib, to serve a minimal OOP layer over PHP socket API functions.

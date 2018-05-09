@@ -1,0 +1,21 @@
+{
+  "noDaemon": "hibás",
+  "pidFile": 12411,
+  "logFilePath": 4,
+  "logFileMaxBytes": "ABCKB",
+  "logMaxNumOfBackups": "five",
+  "logLevel": 3,
+  "noCleanUp": 0,
+  "servers" : [
+    {
+      "protocol" : "tcp",
+      "host" : "127.0.0.1",
+      "port" : "8080",
+      "canReUseSocketAddress": true,
+      "username": "bÄlä1",
+      "password": 12345
+    }
+  ],
+  "processes": [
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "processes": [
+    {
+      "command": "/bin/cat Client.php",
+      "name": "15hosszunevleh"
+    }
+  ],
+  "servers": [
+    {
+      "protocol" : "tcp",
+      "host" : "127.0.0.1",
+      "port" : "8080",
+      "username": "bÄlä1",
+      "password": 12345
+    }
+  ]
+}

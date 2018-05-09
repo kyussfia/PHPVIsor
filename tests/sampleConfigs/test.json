@@ -1,0 +1,48 @@
+{
+  "noDaemon": true,
+  "logFilePath": "/tmp/PHPVisor/log/server.log",
+  "logFileMaxBytes": "50KB",
+  "logMaxNumOfBackups": 3,
+  "logLevel": "debug",
+  "logChildLogDir": "/tmp/PHPVisor/log/child/",
+  "noCleanUp": false,
+  "servers" : [
+    {
+      "protocol" : "tcp",
+      "host" : "127.0.0.1",
+      "port" : "8080",
+      "canReUseSocketAddress": true,
+      "username": "bÄlä1",
+      "password": 12345
+    },
+    {
+      "protocol": "udp",
+      "host": "127.0.0.1",
+      "port": "8888",
+      "canReUseSocketAddress": false
+    },
+    {
+      "protocol": "unix",
+      "host": "/tmp/PHPVisor/comm.sock",
+      "canReUseSocketAddress": false
+    }
+  ],
+  "processes": [
+    {
+      "command": "php sleeper.php",
+      "delay": 1,
+      "customSignal": "TERM",
+      "stdOutLogFilePath": "AUTO",
+      "autoStart": false,
+      "stdErrorFile": "/tmp/PHPVisor/log/child/sleeper.err.log",
+      "logMode": "normal",
+      "name": "sleeper"
+    },
+    {
+      "command": "/bin/cat Client2.php",
+      "name": "15hosszunevleh",
+      "autoStart": true,
+      "autoRestartOn": "expected"
+    }
+  ]
+}

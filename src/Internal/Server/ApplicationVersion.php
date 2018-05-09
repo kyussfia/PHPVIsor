@@ -10,6 +10,9 @@ namespace PHPVisor\Internal\Server;
 
 class ApplicationVersion
 {
+    /**
+     * @var string
+     */
     public $prefix = "Version ";
 
     public function getFromFile($path)
