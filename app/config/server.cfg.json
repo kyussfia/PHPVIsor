@@ -42,7 +42,7 @@
       "termWaitSecs": 1,
       "priority": -5,
       "groups": [],
-      "name": "Klienskód_print",
+      "name": "Kliensprint",
       "stdErrorFile": null,
       "stdInFile": null,
       "stdOutLogFilePath": "AUTO",
@@ -54,6 +54,7 @@
     {
       "command": "php sleeper.php",
       "delay": 1,
+      "name": "sleeper",
       "customSignal": "TERM",
       "stdOutLogFilePath": "AUTO",
       "autoStart": true,

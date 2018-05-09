@@ -1,7 +1,7 @@
 <?php
 /**
  * @author: kyussfia
- * @see:
+ * @see: https://github.com/kyussfia/PHPVisor
  *
  * Created at: 2018.04.08. 11:03
  */
@@ -182,7 +182,7 @@ class ProcessOptions extends AbstractOptions
         $this->setOptionIfExist('name', 'name');
         if (!$this->name)
         {
-            $this->name = "Proc_" . $this->command;
+            $this->name = "Pr_" . $this->command;
         }
         if (strlen($this->name) > 15)
         {
@@ -226,7 +226,7 @@ class ProcessOptions extends AbstractOptions
                     case "KILL":
                     case "SIGKILL":
                         return SIGKILL;
-                    //case "CONT":
+                    //case "CONT": wee dont  the user to manipulate with these options
                     //case "SIGCONT":
                     //    return SIGCONT;
                     //case "STPT":

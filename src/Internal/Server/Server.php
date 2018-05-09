@@ -1,7 +1,7 @@
 <?php
 /**
  * @author: kyussfia
- * @see:
+ * @see: https://github.com/kyussfia/PHPVisor
  *
  * Created at: 2018.04.03. 16:33
  */
@@ -720,6 +720,4 @@ class Server extends ProcessManager
     }
 
     /**************** End Comm handling *********************************/
-
-    //todo: testing + options testing
 }
