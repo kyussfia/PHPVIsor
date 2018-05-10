@@ -287,7 +287,7 @@ A printLog opció nem használható a háttérben való futtatás esetén, mivel
       \label{fig:run_print}
   \end{figure}
 
-A \ref{fig:run_print}. ábán látható, hogy miután elindult a program, sorban jelennek meg a fontosabb műveletekhez kapcsolódó rendszerüzenetek. A program a beállított naplózási szintnek megfelelő, időbélyeggel ellátott bejegyzéseken keresztül leírja, mikor inicializálja magát a szerver komponens, milyen folyamatokat indított el a rendszer, milyen portokat nyitott ki, illetve melyeken hallgat. A naplókon nyomon követhetőek \textit{debug} naplózási szinttel, a klienssel való kommunikáció nyomai is, a naplók rögzítik, hogy mikor egy kapcsolat létrejön, illetve a kommunikáció tárgyát képező üzeneteket is. (\ref{fig:runcon}. ábra)
+A \ref{fig:run_print}. ábán látható, hogy miután elindult a program sorban jelennek meg a fontosabb műveletekhez kapcsolódó rendszerüzenetek. A program a beállított naplózási szintnek megfelelő időbélyeggel ellátott bejegyzéseken keresztül leírja mikor inicializálja magát a szerver komponens, milyen folyamatokat indított el a rendszer, milyen portokat nyitott ki, illetve melyeken hallgat. A naplókon nyomon követhetőek \textit{debug} naplózási szinttel, a klienssel való kommunikáció nyomai is. A naplók rögzítik mikor egy kapcsolat létrejön, illetve a kommunikáció tárgyát képező üzeneteket is. (\ref{fig:runcon}. ábra)
   \begin{figure}[ht]
   \centering
   \includegraphics[width=14cm]{pics/runcon.png}
@@ -297,7 +297,7 @@ A \ref{fig:run_print}. ábán látható, hogy miután elindult a program, sorban
 
   \subsubsection{Hibaüzenetek}
   \paragraph{}
- Mindkét program (szerver-kliens), kivételek, azaz exception-ök segítségévél jelzi hibaállapotait. A kivételek jellemzően az adatbeviteli vagy a kommunikációs mechanizmusokból eredhet.  A kivétel keletkezése, azonnal leállítja a program futását. Amennyiben nem konfigurációs hiba keletkezik, a rendszer az okozó kivételt, a napló végére írja, majd leáll.	
+ Mindkét program (szerver-kliens), kivételek, azaz exception-ök segítségévél jelzi hibaállapotait. A kivételek jellemzően adatbeviteli vagy kommunikációs mechanizmusokból eredhetnek.  A kivétel keletkezése, azonnal leállítja a program futását. Amennyiben nem konfigurációs hiba keletkezik, a rendszer az okozó kivételt, a napló végére írja, majd leáll.	
  A szerver komponens lehetséges hibaüzenetei:
  \begin{itemize}
  \item \textit{InvalidArgumentException:} Olyan kivételek, amelyek azt hivatottak jelezni a felhasználónak, hogy  konfiguráció során invalid adatot adott meg a megjelölt helyen. 
@@ -418,7 +418,7 @@ A program menüpontjai a következők:
   További két oszlopban időbélyegekkel ellátott jelzőket találhatunk, a \textit{lastStop} értéke bárminemű fentebb említett leállás legutóbbi idejét, míg a \textit{lastStart} a legutóbbi indításának időpontját szimbolizálja.
   Az utolsó oszlopban a már említett \textit{rounds}, az egyes futásokat számlálja. Egy teljesértékű, normális lefutás e számláló eggyel való növekedését okozza.
  \\
- A státuszinformációk kinyerésén kívül, folyamatok futását befolyásoló parancsok közlésére is van lehetőség. Ezek paraméterhez kötött akciók, amelyek esetében a paraméterek a akció hatáskörébe eső folyamatokat határozzák meg.
+ A státuszinformációk kinyerésén kívül folyamatok futását befolyásoló parancsok közlésére is van lehetőség. Ezek, paraméterhez kötött akciók amelyek esetében a paraméterek az akció hatáskörébe eső folyamatokat határozzák meg.
  \paragraph{}
  A szerverrel való kommunikáció eredményéről a kliens, minden esetben tájékoztat. \textit{Success} állapottal jelzi, amennyiben a kérés sikeresen célt ért, végrehajtódott és a megfelelő sikeres válaszüzenetet kapta vissza.(\ref{fig:succ}. ábra) 
 Amennyiben valamely olyan eset lépett fel amelyet a szerver hibásnak ítélt meg, (például elrontott felhasználó-jelszó páros), a válaszban érkező hibaüzenetet a kliens az \textit{Error} állapottal jeleníti meg. (\ref{fig:err}. ábra)
@@ -469,7 +469,7 @@ A külső forrásanyag, teljes project-ként megtalálható az alkalmazás \text
 \pagebreak
 \section{Tervezés}
 \paragraph{}
-A  feladat részletes leírása, a \ref{par:feladat}. pontban található. A program architektúrája miatt, két alapvető egységre bomlik: kliensre és szerverre. A szerver egy olyan program, amely futása közben felhasználói interakciót nem biztosít, így tulajdonképpen csak egy konfigurálási réteggel lép kapcsolatba a felhasználó. A kliens ezzel ellenben, egy főképp felhasználói interakcióra épülő alkalmazás, amelynek lehetőséget kell biztosítania az elvárt akciók végrehajtására és közlésére a szerver felé.
+A  feladat részletes leírása, a \ref{par:feladat}. pontban található. A program architektúrája miatt, két alapvető egységre bomlik: kliensre és szerverre. A szerver egy olyan program, amely futása közben felhasználói interakciót nem biztosít, így tulajdonképpen csak egy konfigurálási réteggel lép kapcsolatba a felhasználó. A kliens ezzel szembern, egy főképp felhasználói interakcióra épülő alkalmazás, amelynek lehetőséget kell biztosítania az elvárt akciók végrehajtására és közlésére a szerver felé.
 
 Mindkét program egy-egy objektumént való reprezentálásával, egy könnyen alkalmazható ún. alkalmazási réteg jön létre. Ez azt jelenti, hogy az egyes futást kiváltó állományokban, csupán a megfelelő alkalmazás-objektum példányosítására majd elindítására van szükség.
 Ezen alkalmazásrétegbe épül be a konfigurációs-réteg és a program lényegét adó metódusok is. 
