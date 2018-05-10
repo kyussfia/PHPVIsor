@@ -203,6 +203,10 @@ class ProcessOptions extends AbstractOptions
     {
         $this->setOptionIfExist('termSignal', 'termSignal');
         $this->termSignal = $this->resolveSignal($this->termSignal, 'termSignal');
+        if (empty($this->termSignal))
+        {
+            $this->termSignal = SIGTERM;
+        }
     }
 
     private function setCustomSignal()
@@ -266,7 +270,6 @@ class ProcessOptions extends AbstractOptions
                 }
                 return constant($signame);
             }
-
         }
     }
 

@@ -454,6 +454,7 @@ class Process
         {
             $this->logger->notice("#".$this->getPid()." - ".$this->getName()." got a customSignal by user.");
             $this->addSignal($this->getCustomSignal());
+            $this->stoppedByUser = true;
         }
         return $result;
     }
@@ -514,6 +515,7 @@ class Process
             $this->stoppedByUser = false;
             proc_close($this->resource);
         }
+
         $this->running = false;
         $this->logger->notice("#".$this->getPid()." - ".$this->getName()." shutted down. Last running result: ".$this->lastRunningResult);
     }
