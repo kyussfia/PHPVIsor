@@ -6,7 +6,6 @@
   "logMaxNumOfBackups": 3,
   "user": "mikus",
   "umask": "022",
-  "directory": "/home/mikus/Dokumentumok/Workspace/PHPVisor/app",
   "logLevel": "debug",
   "logChildLogDir": "/tmp/PHPVisor/log/child/",
   "noCleanUp": false,
@@ -18,17 +17,6 @@
       "canReUseSocketAddress": true,
       "username": "bÄlä1",
       "password": 12345
-    },
-    {
-      "protocol": "udp",
-      "host": "127.0.0.1",
-      "port": "8888",
-      "canReUseSocketAddress": false
-    },
-    {
-      "protocol": "unix",
-      "host": "/tmp/PHPVisor/comm.sock",
-      "canReUseSocketAddress": false
     }
   ],
   "processes": [
@@ -44,29 +32,7 @@
       "termWaitSecs": 1,
       "priority": -5,
       "groups": [],
-      "name": "Kliens_suc_res",
-      "stdErrorFile": null,
-      "stdInFile": null,
-      "stdOutLogFilePath": "AUTO",
-      "stdOutLogMaxBytes": "50KB",
-      "stdOutLogMaxBackups": 2,
-      "logMode": "normal",
-      "logLevel": "Notice"
-    },
-    {
-      "command": "/bin/cat Client.php",
-      "autoStart": true,
-      "delay": 2,
-      "autoRestartOn": "expected",
-      "exitCodes": [0],
-      "stopWaitSecs": 10,
-      "customSignal": "QUIT",
-      "termSignal": "TERM",
-      "directory": "/tmp/PHPVisor/",
-      "termWaitSecs": 1,
-      "priority": -5,
-      "groups": [],
-      "name": "Cli_err",
+      "name": "Kliensprint",
       "stdErrorFile": null,
       "stdInFile": null,
       "stdOutLogFilePath": "AUTO",
@@ -80,6 +46,7 @@
       "delay": 1,
       "name": "sleeper",
       "customSignal": "TERM",
+      "autoRestartOn": "unexpected",
       "stdOutLogFilePath": "AUTO",
       "autoStart": true,
       "stdErrorFile": "/tmp/PHPVisor/log/child/sleeper.err.log",
@@ -88,7 +55,7 @@
     {
       "command": "/bin/cat Client.php",
       "autoStart": false,
-      "delay": 10,
+      "delay": 1,
       "autoRestartOn": "none",
       "exitCodes": [0],
       "stopWaitSecs": 10,
@@ -97,7 +64,7 @@
       "termWaitSecs": 1,
       "priority": -5,
       "groups": ["alma"],
-      "name": "Kliensprint2",
+      "name": "klienspr_1szer",
       "stdErrorFile": null,
       "stdInFile": null,
       "stdOutLogFilePath": "AUTO",
