@@ -492,7 +492,7 @@ A \ref{fig:abstract}. ábrán megjelenő gráf, alsó útja - az options-től a 
   \paragraph{}
   A szerver három legnagyobb feladata a socketek kezelése, a folyamatok felügyelete és a beérkező kapcsolatok lebonyolítása. A socketet létrehozása a SocketManager objektum feladata, amelyet a Server objektum konstruálásakor hozunk létre. A Server önmagában a ProcessManager osztályból származik, aminek feladata a folyamathoz kötődő funkciók kezelése, mint például folyamatok elindítása, megállítása. A klienssel való kommunikációt önmagában valósítja meg a Server.
   
-  \subparagraph{Megjegyzés:}Javaslat refaktorizációs fejlesztéshez, hogy az imént említett kommunikációs műveletek leválasztásra kerüljenek a Server objektum törzséről.
+  \subparagraph{Megjegyzés:}Javaslat fejlesztéshez, hogy az imént említett kommunikációs műveletek leválasztásra kerüljenek a Server objektum törzséről.
   \paragraph{}
 Ezen felül rendelkeznie kell a feladatban definiált naplózási funkciókkal, amelyeket a \textit{Logger} objektum hivatott kezelni. A Logger feladata a megfelelő naplózási opciók (\textit{LogOptions}) szerinti naplóbejegyzések készítése. (Ezen bejegyzéseket szintén  a szerver vezérli).
 
@@ -717,10 +717,10 @@ Az egyes futtatandó programok ideális esetben ritkán változnak, ezzel ellent
 Ilyen esetekben egy megfelelő folyamatkezelést, vezérlést biztosító program megléte rendkívül megkönnyítheti az üzemeltetést. A program implementációjából fakadóan minimális függőséget jelenthet alkalmazási környezettől függően.
 \paragraph{}
 A tervezett céljaim a program megvalósítása során teljesültek. Az eleinte kitalált funkcionalitások implementálásra kerültek, továbbá olyan funkciók is megvalósultak, amelyek a kényelmesebb használatot teszik lehetővé.
-Az alapvető irányvonal a fejlesztés során az volt, hogy egy könnyen kezelhető (alacsony szintű) programot hozzak létre, ami magasszintű konfigurálhatóságot biztosít a felhasználójának.
+Az alapvető irányvonal a fejlesztés során az volt, hogy egy egyszerűen kezelhető programot hozzak létre, ami magasszintű konfigurálhatóságot biztosít a felhasználójának.
 A fejlesztés jelenlegi iránya, hogy még több olyan funkció kerüljön a rendszerbe, amelyek elősegítik a gördülékeny használatot. 
 
-A jövőre mutató tervek között szerepel egy  automatikus verziózó szolgáltatás implementálása a szerver komponens számára, de egy alternatív kliens is, ami egy grafikus felületű weboldalt szolgáltat a program kezeléséhez.
+A jövőre mutató tervek között szerepel egy automatikus verziózó szolgáltatás implementálása a szerver komponens számára, de egy alternatív kliens is, ami egy grafikus felületű kezelő-(web)oldalt szolgáltat a rendszer vezérléséhez.
 További fejlesztési munkálatok során ki lehetne terjeszteni a szerver kommunikációs lehetőségeit más specifikusabb protkollokra, HTTP-n keresztüli üzenetváltási standardeket implementálni, esetleg egy összetettebb folyamatcsoportokat kezelő logikát integrálni.
 
 
